@@ -1,4 +1,4 @@
-﻿'use server'
+'use server'
 
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -94,6 +94,12 @@ export async function acceptJobRequest(
   if (jobError) {
     return { success: false, message: safeError(jobError.message) }
   }
+
+  // Ensure job order_code matches the original customer request order_code (in case a DB trigger overrides on insert)
+  await supabase
+    .from('jobs')
+    .update({ order_code: orderCode })
+    .eq('id', jobId)
 
   // Create the payment record
   const { error: paymentError } = await supabase.from('payments').insert({

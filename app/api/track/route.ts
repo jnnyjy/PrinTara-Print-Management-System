@@ -7,6 +7,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 // public SELECT on these tables. Only non-sensitive display fields are
 // returned — no customer names, no file paths, no payment data.
 
+// Ensure this route always returns fresh data (no Next.js caching)
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const supabase = createAdminClient()
 
@@ -75,8 +78,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Order code is required.' }, { status: 400 })
   }
 
-  // Only allow alphanumeric + dash to prevent any injection attempts
-  if (!/^[A-Z0-9\-]+$/.test(rawCode)) {
+  // Only allow alphanumeric + dash + spaces to prevent any injection attempts
+  if (!/^[A-Z0-9\-\s]+$/.test(rawCode)) {
     return NextResponse.json({ error: 'Invalid order code format.' }, { status: 400 })
   }
 

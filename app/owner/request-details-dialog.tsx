@@ -204,7 +204,7 @@ export default function RequestDetailsDialog({
                   letterSpacing: '0.02em',
                 }}
               >
-                {request.order_code}
+                {request.order_code.replace('-', ' - ')}
               </Box>
             </Box>
             <IconButton
@@ -653,4 +653,5 @@ export default function RequestDetailsDialog({
     </>
   )
 }
+
 

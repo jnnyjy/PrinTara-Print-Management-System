@@ -3,6 +3,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { Box } from '@mui/material'
 import KanbanBoard from './kanban-board'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminBoardPage() {
   const authClient = await createClient()
   const supabase = createAdminClient()
@@ -63,11 +65,6 @@ export default async function AdminBoardPage() {
     files: acceptedJobFiles.filter((file) => file.job_id === job.id),
   }))
 
-  const boardKey = [
-    ...jobsWithFiles.map((job) => `${job.id}:${job.status}`),
-    ...requestsWithFiles.map((request) => request.id),
-  ].join('|')
-
   return (
     <Box
       sx={{
@@ -84,7 +81,7 @@ export default async function AdminBoardPage() {
       }}
     >
       <Box sx={{ flex: 1, minHeight: 0 }}>
-        <KanbanBoard key={boardKey} initialJobs={jobsWithFiles} initialRequests={requestsWithFiles} />
+        <KanbanBoard initialJobs={jobsWithFiles} initialRequests={requestsWithFiles} />
       </Box>
     </Box>
   )

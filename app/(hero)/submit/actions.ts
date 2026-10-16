@@ -1,4 +1,4 @@
-﻿'use server'
+'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -57,12 +57,13 @@ function sanitizeFilename(name: string): string {
     .slice(0, 200)                  // cap length
 }
 
-// H2 fix: cryptographically random order code
+// H2 fix: cryptographically random order code — 4 digits (PRT-XXXX format)
+// Collision-retry logic below handles the smaller code space safely.
 function generateRequestCode(): string {
   const array = new Uint32Array(1)
   crypto.getRandomValues(array)
   const num = array[0] % 10000  // 10,000 combinations (4 digits)
-  return `PRT - ${num.toString().padStart(4, '0')}`
+  return `PRT-${num.toString().padStart(4, '0')}`
 }
 
 // M3 fix: never return raw DB/storage error messages in production
@@ -130,8 +131,29 @@ export async function submitJobRequest(
     }
   }
 
-  const orderCode = generateRequestCode()
+  // Generate a unique order code — retry up to 3 times on collision
+  let orderCode = ''
   const requestId = crypto.randomUUID()
+  
+  for (let attempt = 0; attempt < 3; attempt++) {
+    orderCode = generateRequestCode()
+    
+    // Check for existing order code to avoid unique constraint violation
+    const { data: existing } = await supabase
+      .from('job_requests')
+      .select('id')
+      .eq('order_code', orderCode)
+      .maybeSingle()
+    
+    if (!existing) break // No collision, proceed
+    
+    if (attempt === 2) {
+      console.error("[submit] Order code collision after 3 attempts")
+      return { success: false, message: 'Unable to generate a unique order code. Please try again.' }
+    }
+  }
+
+  console.log("[submit] Generated orderCode:", orderCode, "requestId:", requestId)
   const paperSize = customSpecification
     ? `${specifications.join(' + ')}: ${customSpecification}`
     : specifications.join(' + ')
@@ -142,7 +164,8 @@ export async function submitJobRequest(
       .join(' + ')}`
     : null
 
-  const { error: requestError } = await supabase
+  console.log("[submit] Inserting job_request with fallback orderCode:", orderCode)
+  const { data: insertedData, error: requestError } = await supabase
     .from('job_requests')
     .insert({
       id: requestId,
@@ -153,10 +176,32 @@ export async function submitJobRequest(
       order_code: orderCode,
       status: 'PENDING',
     })
+    .select('order_code, status')
+    .maybeSingle()
 
   if (requestError) {
+    console.error("[submit] job_requests insert failed:", requestError)
     return { success: false, message: safeError(requestError.message) }
   }
+  
+  // Guarantee the order code returned to client is the EXACT one stored in DB (in case DB trigger overrides it)
+  let finalOrderCode = insertedData?.order_code
+  if (!finalOrderCode) {
+    const { data: verification, error: verifyError } = await supabase
+      .from('job_requests')
+      .select('order_code, status')
+      .eq('id', requestId)
+      .maybeSingle()
+    
+    if (verifyError || !verification) {
+      console.warn("[submit] Verification query did not find record:", verifyError)
+      finalOrderCode = orderCode
+    } else {
+      finalOrderCode = verification.order_code
+    }
+  }
+
+  console.log("[submit] Final synchronized orderCode stored in DB:", finalOrderCode)
 
   // M2 fix: track uploaded file paths so we can clean up on partial failure
   const uploadedPaths: string[] = []
@@ -192,15 +237,9 @@ export async function submitJobRequest(
     }
   }
 
-  return { success: true, message: 'Your print request was submitted successfully.', orderCode }
+  return { success: true, message: 'Your print request was submitted successfully.', orderCode: finalOrderCode }
   } catch (err) {
     console.error("[submitJobRequest] Unexpected error:", err)
     return { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred.' }
   }
 }
-
-
-
-
-
-

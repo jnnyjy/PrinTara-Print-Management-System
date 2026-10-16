@@ -1,6 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import AcceptRequestDialog from '../accept-request-dialog'
 import RejectRequestButton from '../reject-request-button'
+import AutoRefresh from './auto-refresher'
 import {
   Container,
   Typography,
@@ -11,8 +12,10 @@ import {
   Link as MuiLink,
 } from '@mui/material'
 
+export const dynamic = 'force-dynamic'
+
 export default async function RequestsPage() {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   // Fetch pending requests
   const { data: requests, error: requestsError } = await supabase
@@ -41,6 +44,7 @@ export default async function RequestsPage() {
 
   return (
     <Container sx={{ py: 6 }}>
+      <AutoRefresh intervalMs={60000} />
       <Typography variant="h4" sx={{ mb: 4 }}>Request Queue</Typography>
 
       {requestsError && (

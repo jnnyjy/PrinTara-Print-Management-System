@@ -279,6 +279,7 @@ export default function SubmitPage() {
         component="form"
         onSubmit={(e) => {
           e.preventDefault()
+          if (isPending) return
           setShowValidation(true)
 
           // Check if all required fields are filled

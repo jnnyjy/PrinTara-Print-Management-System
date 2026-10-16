@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -75,9 +75,9 @@ export async function acceptJobRequest(
     return { success: false, message: 'Request not found.' }
   }
 
-  // H2 fix: crypto-based order code (10,000,000 combinations instead of 10,000)
+  // Reuse the customer's original REQ- order code so they can track it
   const jobId = crypto.randomUUID()
-  const orderCode = generateOrderCode('PRT-', 7)
+  const orderCode = request.order_code
 
   const { error: jobError } = await supabase.from('jobs').insert({
     id: jobId,
@@ -225,3 +225,4 @@ export async function updateJobStatus(jobId: string, status: string) {
   revalidatePath('/owner')
   return { success: true, message: 'Updated.' }
 }
+

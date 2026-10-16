@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -244,7 +244,7 @@ export default function KanbanBoard({
                       textAlign: 'center',
                     }}
                   >
-                    {request.order_code.replace('-', ' - ')}
+                    {request.order_code}
                   </Box>
                   <Box component="p" sx={{ m: 0, mb: 0.4, fontSize: '0.78rem', color: '#566170', fontFamily: 'var(--font-geist-sans)', textAlign: 'center' }}>
                     {request.quantity} {request.quantity === 1 ? 'copy' : 'copies'} | {request.color_mode === 'color' ? 'Color' : 'B&W'} | Finishing: {request.notes?.replace(/^Finishing:\s*/, '') || 'None'}
@@ -292,7 +292,7 @@ export default function KanbanBoard({
                       textAlign: 'center',
                     }}
                   >
-                    {job.order_code.replace('-', ' - ')}
+                    {job.order_code}
                   </Box>
                   {/* Details */}
                   <Box component="p" sx={{ m: 0, mb: 0.4, fontSize: '0.78rem', color: '#566170', fontFamily: 'var(--font-geist-sans)', textAlign: 'center' }}>

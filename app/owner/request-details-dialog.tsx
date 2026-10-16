@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -204,7 +204,7 @@ export default function RequestDetailsDialog({
                   letterSpacing: '0.02em',
                 }}
               >
-                {request.order_code.replace('-', ' - ')}
+                {request.order_code}
               </Box>
             </Box>
             <IconButton
@@ -653,3 +653,4 @@ export default function RequestDetailsDialog({
     </>
   )
 }
+

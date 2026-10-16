@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useCallback, useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
@@ -66,7 +66,7 @@ const COLUMNS = [
 
 function formatOrderCode(code: string) {
   if (!code) return ''
-  return code.includes('-') ? code.replace('-', ' - ') : code
+  return code.includes('-') ? code : code
 }
 
 export default function TrackPage() {

@@ -61,8 +61,8 @@ function sanitizeFilename(name: string): string {
 function generateRequestCode(): string {
   const array = new Uint32Array(1)
   crypto.getRandomValues(array)
-  const num = array[0] % 10_000_000  // 10 million combinations (7 digits)
-  return `PRT-${num.toString().padStart(7, '0')}`
+  const num = array[0] % 10000  // 10,000 combinations (4 digits)
+  return `PRT - ${num.toString().padStart(4, '0')}`
 }
 
 // M3 fix: never return raw DB/storage error messages in production
@@ -75,6 +75,7 @@ export async function submitJobRequest(
   _prevState: SubmitFormState,
   formData: FormData
 ): Promise<SubmitFormState> {
+  try {
   const supabase = createAdminClient()
   const quantity = Number(formData.get('quantity'))
   const specifications = formData.getAll('printSpecifications').map(String).filter(Boolean)
@@ -192,7 +193,13 @@ export async function submitJobRequest(
   }
 
   return { success: true, message: 'Your print request was submitted successfully.', orderCode }
+  } catch (err) {
+    console.error("[submitJobRequest] Unexpected error:", err)
+    return { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred.' }
+  }
 }
+
+
 
 
 

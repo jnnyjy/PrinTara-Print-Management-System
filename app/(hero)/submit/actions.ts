@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -168,7 +168,6 @@ export async function submitJobRequest(
     const { error: uploadError } = await supabase.storage.from('job-files').upload(filePath, file)
 
     if (uploadError) {
-      // M2 fix: clean up already-uploaded files and the request row on failure
       if (uploadedPaths.length > 0) {
         await supabase.storage.from('job-files').remove(uploadedPaths)
       }
@@ -194,3 +193,6 @@ export async function submitJobRequest(
 
   return { success: true, message: 'Your print request was submitted successfully.', orderCode }
 }
+
+
+

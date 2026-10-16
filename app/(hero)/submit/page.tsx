@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useActionState, useState, startTransition } from 'react'
 import { useRouter } from 'next/navigation'
@@ -42,6 +42,7 @@ export default function SubmitPage() {
   const [finishingServicesOpen, setFinishingServicesOpen] = useState(false)
   const [showValidation, setShowValidation] = useState(false)
   const [isReturningHome, setIsReturningHome] = useState(false)
+  const [colorMode, setColorMode] = useState('')
 
   const specificationOptions = [
     'A4', 'A5', 'A3', 'Letter', 'Legal', '4×6', '5×7', '8×10',
@@ -286,6 +287,8 @@ export default function SubmitPage() {
           }
 
           const formData = new FormData(e.currentTarget)
+          // Explicitly append controlled values not serialized by the native form
+          if (colorMode) formData.set('colorMode', colorMode)
           selectedFiles.forEach((file) => formData.append('files', file))
 
           startTransition(() => {
@@ -480,6 +483,7 @@ export default function SubmitPage() {
             <MenuItem value="color">Full Color</MenuItem>
             <MenuItem value="bw">Black &amp; White</MenuItem>
           </Select>
+          {colorMode && <input type="hidden" name="colorMode" value={colorMode} />}
         </FormControl>
 
         <FormControl fullWidth>

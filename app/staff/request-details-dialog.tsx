@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -589,7 +589,6 @@ export default function RequestDetailsDialog({
               component="iframe"
               src={`/api/file-proxy?path=${encodeURIComponent(activeFile.file_path)}`}
               title={activeFile.file_name}
-              sandbox=""
               sx={{ width: '100%', height: { xs: '60vh', sm: 520 }, border: 0, bgcolor: 'white', borderRadius: '8px' }}
             />
           ) : (

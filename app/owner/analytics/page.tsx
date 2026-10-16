@@ -1,4 +1,4 @@
-import { Alert, Box } from '@mui/material'
+﻿import { Alert, Box } from '@mui/material'
 import TodayIcon from '@mui/icons-material/Today'
 import DateRangeIcon from '@mui/icons-material/DateRange'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
@@ -68,6 +68,8 @@ export default async function AnalyticsPage({
   const period = isPeriod(params.period) ? params.period : 'daily'
   const supabase = createAdminClient()
   const { data, error } = await supabase.rpc('get_print_shop_analytics', { p_period: period })
+  if (error) console.error("[analytics] RPC error:", error)
+  if (!data) console.error("[analytics] No data returned")
   const analytics = data as AnalyticsData | null
 
   return (
@@ -377,3 +379,4 @@ export default async function AnalyticsPage({
     </Box>
   )
 }
+

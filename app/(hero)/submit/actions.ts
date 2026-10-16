@@ -61,8 +61,8 @@ function sanitizeFilename(name: string): string {
 function generateRequestCode(): string {
   const array = new Uint32Array(1)
   crypto.getRandomValues(array)
-  const num = array[0] % 1_000_000_000  // 1 billion combinations
-  return `REQ-${num.toString().padStart(9, '0')}`
+  const num = array[0] % 10_000_000  // 10 million combinations (7 digits)
+  return `PRT-${num.toString().padStart(7, '0')}`
 }
 
 // M3 fix: never return raw DB/storage error messages in production
@@ -193,6 +193,7 @@ export async function submitJobRequest(
 
   return { success: true, message: 'Your print request was submitted successfully.', orderCode }
 }
+
 
 
 

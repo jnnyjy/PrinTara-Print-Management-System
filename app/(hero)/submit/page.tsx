@@ -467,8 +467,8 @@ export default function SubmitPage() {
           </InputLabel>
           <Select
             id="colorMode"
-            name="colorMode"
-            defaultValue=""
+            value={colorMode}
+            onChange={(e) => setColorMode(e.target.value)}
             required
             sx={{
               bgcolor: '#fff',
@@ -483,7 +483,7 @@ export default function SubmitPage() {
             <MenuItem value="color">Full Color</MenuItem>
             <MenuItem value="bw">Black &amp; White</MenuItem>
           </Select>
-          {colorMode && <input type="hidden" name="colorMode" value={colorMode} />}
+          <input type="hidden" name="colorMode" value={colorMode} />
         </FormControl>
 
         <FormControl fullWidth>

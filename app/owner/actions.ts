@@ -19,14 +19,6 @@ export type AcceptState = {
 // C2 fix: allowlist of valid job statuses — no arbitrary strings accepted
 const ALLOWED_STATUSES = new Set(['RECEIVED', 'PRINTING', 'READY', 'COMPLETED'])
 
-// H2 fix: cryptographically random order code using Web Crypto API
-function generateOrderCode(prefix: string, digits: number): string {
-  const max = Math.pow(10, digits)
-  const array = new Uint32Array(1)
-  crypto.getRandomValues(array)
-  const num = array[0] % max
-  return `${prefix}${num.toString().padStart(digits, '0')}`
-}
 
 // M3 fix: never return raw DB error messages to the client
 function safeError(msg: string): string {

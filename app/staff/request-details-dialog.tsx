@@ -50,46 +50,6 @@ function FileIcon({ fileName }: { fileName: string }) {
   return <InsertDriveFileRoundedIcon sx={{ fontSize: '2rem', color: '#566170' }} />
 }
 
-function DetailChip({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <Box
-      sx={{
-        bgcolor: color,
-        borderRadius: '14px',
-        px: 2,
-        py: 1.25,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 0.25,
-      }}
-    >
-      <Box
-        component="span"
-        sx={{
-          fontFamily: 'var(--font-geist-sans)',
-          fontSize: '0.68rem',
-          fontWeight: 600,
-          color: '#566170',
-          textTransform: 'uppercase',
-          letterSpacing: '0.07em',
-        }}
-      >
-        {label}
-      </Box>
-      <Box
-        component="span"
-        sx={{
-          fontFamily: 'var(--font-geist-sans)',
-          fontSize: '0.95rem',
-          fontWeight: 700,
-          color: '#14233D',
-        }}
-      >
-        {value}
-      </Box>
-    </Box>
-  )
-}
 
 export default function RequestDetailsDialog({
   request,

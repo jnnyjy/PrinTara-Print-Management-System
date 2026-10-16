@@ -41,22 +41,22 @@ export default function KanbanBoard({
   const [requests, setRequests] = useState<PendingRequest[]>(initialRequests)
   const [receipt, setReceipt] = useState<NonNullable<AcceptState['receipt']> | null>(null)
   const [isReceiptClosing, setIsReceiptClosing] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-
-  useEffect(() => {
-    setLastUpdated(new Date())
-  }, [])
+  const [lastUpdated, setLastUpdated] = useState<Date>(() => new Date())
+  const [prevInitialJobs, setPrevInitialJobs] = useState(initialJobs)
+  const [prevInitialRequests, setPrevInitialRequests] = useState(initialRequests)
 
   // Keep state in sync with server data when router.refresh() fetches new props
-  useEffect(() => {
+  if (initialJobs !== prevInitialJobs) {
+    setPrevInitialJobs(initialJobs)
     setJobs(initialJobs)
     setLastUpdated(new Date())
-  }, [initialJobs])
+  }
 
-  useEffect(() => {
+  if (initialRequests !== prevInitialRequests) {
+    setPrevInitialRequests(initialRequests)
     setRequests(initialRequests)
     setLastUpdated(new Date())
-  }, [initialRequests])
+  }
 
   const handleAccepted = useCallback((nextReceipt: NonNullable<AcceptState['receipt']>) => {
     setReceipt(nextReceipt)
@@ -193,6 +193,7 @@ export default function KanbanBoard({
           />
           <Box
             component="span"
+            suppressHydrationWarning
             sx={{
               fontSize: '0.72rem',
               fontWeight: 600,
@@ -264,8 +265,9 @@ export default function KanbanBoard({
               {/* Column header */}
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, px: 0.5 }}>
                 <Box
-                  component="span"
-                  sx={{
+            component="span"
+            suppressHydrationWarning
+            sx={{
                     fontFamily: 'var(--font-geist-sans)',
                     fontWeight: 800,
                     fontSize: '0.8rem',
@@ -278,8 +280,9 @@ export default function KanbanBoard({
                 </Box>
                 {totalCount > 0 && (
                   <Box
-                    component="span"
-                    sx={{
+            component="span"
+            suppressHydrationWarning
+            sx={{
                       bgcolor: 'rgba(255,255,255,0.8)',
                       px: 1,
                       py: 0.2,
@@ -443,8 +446,9 @@ export default function KanbanBoard({
                     }}
                   >
                     <Box
-                      component="span"
-                      sx={{
+            component="span"
+            suppressHydrationWarning
+            sx={{
                         fontFamily: 'var(--font-geist-sans)',
                         color: '#8A92A0',
                         fontSize: '0.82rem',

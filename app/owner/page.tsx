@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Box } from '@mui/material'
 import KanbanBoard from './kanban-board'
@@ -6,7 +5,6 @@ import KanbanBoard from './kanban-board'
 export const dynamic = 'force-dynamic'
 
 export default async function AdminBoardPage() {
-  const authClient = await createClient()
   const supabase = createAdminClient()
 
   const { data: jobs } = await supabase

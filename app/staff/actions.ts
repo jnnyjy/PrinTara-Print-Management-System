@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -46,9 +46,9 @@ export async function acceptJobRequest(
     return { success: false, message: 'Not authenticated.' }
   }
 
-  // C1 fix: staff cannot accept requests — owner only
+  // Both staff and owner can accept requests
   const role = getRoleFromEmail(user.email)
-  if (role !== 'owner') {
+  if (role !== 'staff' && role !== 'owner') {
     return { success: false, message: 'Not authorized.' }
   }
 
@@ -154,9 +154,9 @@ export async function rejectJobRequest(
     return { success: false, message: 'Not authenticated.' }
   }
 
-  // C1 fix: staff cannot reject requests — owner only
+  // Both staff and owner can reject requests
   const role = getRoleFromEmail(user.email)
-  if (role !== 'owner') {
+  if (role !== 'staff' && role !== 'owner') {
     return { success: false, message: 'Not authorized.' }
   }
 
@@ -216,3 +216,4 @@ export async function updateJobStatus(jobId: string, status: string) {
   revalidatePath('/staff')
   return { success: true, message: 'Updated.' }
 }
+

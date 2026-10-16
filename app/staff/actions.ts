@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getRoleFromEmail } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 
@@ -37,8 +38,9 @@ export async function acceptJobRequest(
   prevState: AcceptState,
   formData: FormData
 ): Promise<AcceptState> {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
+  const supabase = createAdminClient()
 
   if (!user) {
     return { success: false, message: 'Not authenticated.' }
@@ -144,8 +146,9 @@ export async function rejectJobRequest(
   _prevState: AcceptState,
   formData: FormData
 ): Promise<AcceptState> {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
+  const supabase = createAdminClient()
 
   if (!user) {
     return { success: false, message: 'Not authenticated.' }
@@ -181,8 +184,9 @@ export async function rejectJobRequest(
 }
 
 export async function updateJobStatus(jobId: string, status: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
+  const supabase = createAdminClient()
 
   if (!user) {
     return { success: false, message: 'Not authenticated.' }

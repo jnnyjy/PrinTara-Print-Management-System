@@ -1,13 +1,14 @@
 import { Alert, Box } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { getRoleFromEmail } from '@/lib/auth'
 import CompletedJobsList from './completed-jobs-list'
 import type { BoardJob } from '../job-details-dialog'
 
 export default async function CompletedJobsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
 
   if (!user) {
     redirect('/login')
@@ -19,6 +20,8 @@ export default async function CompletedJobsPage() {
   if (role !== 'owner') {
     redirect('/owner')
   }
+
+  const supabase = createAdminClient()
 
   // Fetch all completed jobs (including archived) that have a paid payment.
   const { data: jobs, error } = await supabase

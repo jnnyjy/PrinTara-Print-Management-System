@@ -6,6 +6,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import PaidIcon from '@mui/icons-material/Paid'
 import PeriodSelect from './period-select'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { getRoleFromEmail } from '@/lib/auth'
 
@@ -14,8 +15,8 @@ export default async function AnalyticsPage({
 }: {
   searchParams: Promise<{ period?: string }>
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
 
   if (!user) {
     redirect('/login')
@@ -65,6 +66,7 @@ export default async function AnalyticsPage({
 
   const params = await searchParams
   const period = isPeriod(params.period) ? params.period : 'daily'
+  const supabase = createAdminClient()
   const { data, error } = await supabase.rpc('get_print_shop_analytics', { p_period: period })
   const analytics = data as AnalyticsData | null
 
